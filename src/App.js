@@ -75,7 +75,9 @@ const App = () => {
           >
             <option value="">Filter By Region</option>
             {filter_items.map((item) => (
-              <option value={item}>Filter By {item}</option>
+              <option key={item} value={item}>
+                Filter By {item}
+              </option>
             ))}
           </select>
           <span className="focus"></span>
