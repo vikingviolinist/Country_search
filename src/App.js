@@ -3,7 +3,7 @@ import './App.css';
 
 const App = () => {
   const [error, setError] = useState(null);
-  const [loaded, setLoaded] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('');
@@ -11,14 +11,10 @@ const App = () => {
 
   useEffect(() => {
     const headers = new Headers();
-    const api_key = process.env.REACT_APP_API_KEY;
-    headers.append('Authorization', `Bearer ${api_key}`);
+    headers.append('Authorization', `Bearer ${process.env.REACT_APP_API_KEY}`);
     headers.append('Content-Type', 'application/json');
 
-    const options = {
-      method: 'GET',
-      headers,
-    };
+    const options = { method: 'GET', headers };
 
     fetch('https://countryapi.io/api/all', options)
       .then((res) => res.json())
@@ -32,12 +28,12 @@ const App = () => {
         },
         (error) => setError(error)
       )
-      .finally(() => setLoaded(true));
+      .finally(() => setLoading(false));
   }, []);
 
   const search_parameters = Object.keys(Object.assign({}, ...items));
 
-  const filter_items = [...new Set(items.map((item) => item.region))];
+  const reqions = [...new Set(items.map(({ region }) => region))];
 
   const search = (items) =>
     items.filter(
@@ -48,10 +44,10 @@ const App = () => {
         )
     );
 
-  const load_more = (e) => setPaginate((prev) => prev + 8);
+  const loadMore = (e) => setPaginate((prev) => prev + 8);
 
   if (error) return <h1 className="heading">{error}</h1>;
-  else if (!loaded) return <h1 className="heading">Loading...</h1>;
+  else if (loading) return <h1 className="heading">Loading...</h1>;
 
   return (
     <div className="wrapper">
@@ -74,7 +70,7 @@ const App = () => {
             aria-label="Filter Countries By Region"
           >
             <option value="">Filter By Region</option>
-            {filter_items.map((item) => (
+            {reqions.map((item) => (
               <option key={item} value={item}>
                 Filter By {item}
               </option>
@@ -111,7 +107,7 @@ const App = () => {
             </li>
           ))}
       </ul>
-      <button onClick={load_more}>Load more...</button>
+      <button onClick={loadMore}>Load more...</button>
     </div>
   );
 };
